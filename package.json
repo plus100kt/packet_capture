@@ -19,7 +19,7 @@
   },
   "homepage": "https://github.com/plus100kt/packet_capture#readme",
   "dependencies": {
-    "@plus100kt/pcap": "^0.0.3",
+    "@plus100kt/pcap": "^0.0.4",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
     "mongoose": "^6.7.4"

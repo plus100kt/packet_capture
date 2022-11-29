@@ -1,7 +1,6 @@
 import { EthernetPacket, IPv4, PcapPacket, PcapProtocolDecimal, PcapProtocolName } from '@plus100kt/pcap';
 
 export interface MyPacket {
-    id: number;
     src: string;
     dst: string;
     sport: number;
@@ -15,10 +14,10 @@ export interface MyPacket {
     ttl: number;
     windowSize: number;
     checksum: number;
+    
 }
 
 const ipv4toPacket = (ipv4Packet: IPv4): MyPacket => ({
-    id: 3,
     src: ipv4Packet.saddr.addr.join('.'),
     dst: ipv4Packet.daddr.addr.join('.'),
     sport: ipv4Packet.payload.sport,
@@ -36,17 +35,17 @@ const ipv4toPacket = (ipv4Packet: IPv4): MyPacket => ({
 
 export const toMyPacket = (pcapPacket: PcapPacket) => {
     if (pcapPacket.link_type === 'LINKTYPE_ETHERNET') {
-        const ethernetPacket = pcapPacket.payload as EthernetPacket;
+        const ethernetPacket: EthernetPacket = pcapPacket.payload;
         return ipv4toPacket(ethernetPacket.payload);
     }
 
     if (pcapPacket.link_type == 'LINKTYPE_RAW') {
-        const ipv4Packet = pcapPacket.payload as IPv4;
+        const ipv4Packet: IPv4 = pcapPacket.payload;
         return ipv4toPacket(ipv4Packet);
     }
 
     // 일어날리 없을것 같지만
-    const ipv4Packet = pcapPacket.payload as IPv4;
+    const ipv4Packet: IPv4 = pcapPacket.payload;
     return ipv4toPacket(ipv4Packet);
 };
 

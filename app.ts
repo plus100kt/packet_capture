@@ -10,7 +10,7 @@ app.get('/packetCapture', (req: Request, res: Response) => {
     res.json();
 });
 
-app.get('getPacketFile', (req: Request, res: Response) => {
+app.get('/getPacketFile', (req: Request, res: Response) => {
     const fileName = 'packet.json';
     const myPackets = readPackets(fileName);
     res.json(myPackets);
