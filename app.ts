@@ -1,22 +1,29 @@
 import dotenv from 'dotenv';
 import express, { Request, Response } from 'express';
-import mongoose from 'mongoose';
+import { readPackets } from './packet_capture/file';
 import { packetCapture } from './packet_capture/packet_capture';
 
-dotenv.config();
 const app = express();
-const { PORT, MONGO_URI } = process.env;
 
-app.get('/getPacket', (req: Request, res: Response) => {
+app.get('/packetCapture', (req: Request, res: Response) => {
     packetCapture();
     res.json();
 });
 
-mongoose
-    .connect(MONGO_URI ?? '')
-    .then(() => console.log('Successfully connected to mongodb'))
-    .catch((e) => console.error(e));
+app.get('getPacketFile', (req: Request, res: Response) => {
+    const fileName = 'packet.json';
+    const myPackets = readPackets(fileName);
+    res.json(myPackets);
+});
 
-app.listen(PORT, () => console.log(`Server listening on port ${PORT}`));
+// // db 관련 설정
+// dotenv.config();
+// export const { PORT, MONGO_URI } = process.env;
 
+// mongoose
+//     .connect(MONGO_URI ?? '')
+//     .then(() => console.log('Successfully connected to mongodb'))
+//     .catch((e) => console.error(e));
+
+// app.listen(PORT);
 app.listen(8080);

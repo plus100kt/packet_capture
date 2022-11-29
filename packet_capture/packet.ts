@@ -1,6 +1,6 @@
-import { IPv4, PcapProtocolDecimal, PcapProtocolName } from '@plus100kt/pcap';
+import { EthernetPacket, IPv4, PcapPacket, PcapProtocolDecimal, PcapProtocolName } from '@plus100kt/pcap';
 
-interface Packet {
+export interface MyPacket {
     id: number;
     src: string;
     dst: string;
@@ -17,22 +17,38 @@ interface Packet {
     checksum: number;
 }
 
-export const ipv4toPacket = (pcapPacket: IPv4): Packet => ({
+const ipv4toPacket = (ipv4Packet: IPv4): MyPacket => ({
     id: 3,
-    src: pcapPacket.saddr.join('.'),
-    dst: pcapPacket.daddr.join('.'),
-    sport: pcapPacket.payload.sport,
-    dport: pcapPacket.payload.dport,
-    seqno: pcapPacket.payload.seqno,
-    ackno: pcapPacket.payload.ackno,
-    length: pcapPacket.length,
-    pcapProtocol: protocolDecimalToName[pcapPacket.protocol],
-    portProtocol: portToProtocol[pcapPacket.payload.sport],
-    data: pcapPacket.payload.data,
-    ttl: pcapPacket.ttl,
-    windowSize: pcapPacket.payload.windowSize,
-    checksum: pcapPacket.payload.checksum,
+    src: ipv4Packet.saddr.addr.join('.'),
+    dst: ipv4Packet.daddr.addr.join('.'),
+    sport: ipv4Packet.payload.sport,
+    dport: ipv4Packet.payload.dport,
+    seqno: ipv4Packet.payload.seqno,
+    ackno: ipv4Packet.payload.ackno,
+    length: ipv4Packet.length,
+    pcapProtocol: protocolDecimalToName[ipv4Packet.protocol],
+    portProtocol: portToProtocol[ipv4Packet.payload.sport],
+    data: ipv4Packet.payload.data,
+    ttl: ipv4Packet.ttl,
+    windowSize: ipv4Packet.payload.windowSize,
+    checksum: ipv4Packet.payload.checksum,
 });
+
+export const toMyPacket = (pcapPacket: PcapPacket) => {
+    if (pcapPacket.link_type === 'LINKTYPE_ETHERNET') {
+        const ethernetPacket = pcapPacket.payload as EthernetPacket;
+        return ipv4toPacket(ethernetPacket.payload);
+    }
+
+    if (pcapPacket.link_type == 'LINKTYPE_RAW') {
+        const ipv4Packet = pcapPacket.payload as IPv4;
+        return ipv4toPacket(ipv4Packet);
+    }
+
+    // 일어날리 없을것 같지만
+    const ipv4Packet = pcapPacket.payload as IPv4;
+    return ipv4toPacket(ipv4Packet);
+};
 
 const protocolDecimalToName: Record<PcapProtocolDecimal, PcapProtocolName> = {
     1: 'icmp',
