@@ -1,4 +1,4 @@
-import pcap, { PcapPacket } from '@plus100kt/pcap';
+import pcap, { PacketWithHeader, PcapPacket } from '@plus100kt/pcap';
 import { savePacket } from './db';
 import { openFile, writePacket } from './file';
 import { toMyPacket } from './packet';
@@ -12,10 +12,9 @@ export const packetCapture = () => {
     const fileName = 'packet.json';
     openFile(fileName);
 
-    pcap_session.on('packet', (raw_packet) => {
+    pcap_session.on('packet', (raw_packet: PacketWithHeader) => {
         const pcapPacket: PcapPacket = pcap.decode.packet(raw_packet);
-        console.log(pcapPacket.payload);
-        const myPacket = toMyPacket(pcapPacket);
+        const myPacket = toMyPacket(pcapPacket, raw_packet);
 
         // // db 저장시
         // savePacket(myPacket)
